@@ -1,11 +1,12 @@
 body{
- background-color: rgba(95, 121, 140, 0.17);
+ background-color: #0a0f1f;
+ color: #dde4f0;
  overflow-y: scroll;
 }
 
 .navbar--style{
-   background-color: #3C4D59 !important;
-   border-color: #5F798C !important;
+   background-color: #121a2f !important;
+   border-color: #243254 !important;
 
 }
 
@@ -13,7 +14,7 @@ body{
 
    padding: 0 12px !important;
    border-color: transparent !important;
-   color: #5F798C !important;
+   color: #1d2c4e !important;
    background-color: #fff !important;
    font-weight: bold;
    height: 34px;
@@ -34,13 +35,13 @@ body{
 .userLogged--a{
 
    color:#fff !important;
-   background-color: #5F798C !important;
+   background-color: #1d2c4e !important;
 
 }
 
 .navbar-brand{
 
-   color: #D8D888 !important;
+   color: #ffd34d !important;
 
 }
 
@@ -50,7 +51,7 @@ body{
 
 .itemMenu:hover{
 
-   background-color: #5F798C !important;
+   background-color: #1d2c4e !important;
    border-bottom-color: #fff;
 
 }
@@ -67,7 +68,7 @@ body{
 .userLogged li>a,
 .userLogged li:hover>a{
 
-   color: #5F798C !important;
+   color: #1d2c4e !important;
 
 }
 
@@ -98,7 +99,15 @@ body{
 
 .btn-border,
 .input-border{
-   border: 1px solid #3C4D59 !important;
+   border: 1px solid #243254 !important;
+}
+
+.bets-footer{
+   margin-top: 20px;
+   padding: 12px 0;
+   background-color: #121a2f;
+   border-top: 1px solid #243254;
+   color: #a9b8d0;
 }
 
 @media screen and (max-width: 767px) {

@@ -65,6 +65,11 @@
 <div class="container-fluid">
     {% block container %}{% endblock %}
 </div>
+<footer class="bets-footer">
+    <div class="container text-center">
+        <span><strong>BetsMania</strong> · Odds em tempo real · Jogue com responsabilidade</span>
+    </div>
+</footer>
 
 <!-- Bootstrap core JavaScript
 ================================================== -->
@@ -77,14 +82,16 @@
    $('#modalLogin').modal('show');
 function showMessage(message, tag){
      $.notify({
-         message: message
-     },{
-         type: tag
-     },{
-         animate: {
-             enter: 'animated fadeInDown',
-             exit: 'animated fadeOutUp'
-         },
+          message: message
+      },{
+          type: tag,
+          delay: 2500,
+          z_index: 9999
+      },{
+          animate: {
+              enter: 'animated fadeInDown',
+              exit: 'animated fadeOutUp'
+          },
      });
 };
 {% if messages %}
