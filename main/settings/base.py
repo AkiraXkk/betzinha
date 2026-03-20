@@ -34,7 +34,7 @@ SECRET_KEY = config('SECRET_KEY', default='')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 if not SECRET_KEY:
-    if DEBUG:
+    if DEBUG or os.environ.get('VERCEL_DEPLOY') == '1':
         SECRET_KEY = get_random_secret_key()
     else:
         raise ImproperlyConfigured('SECRET_KEY must be set when DEBUG is False')
