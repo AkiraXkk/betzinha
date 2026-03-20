@@ -12,7 +12,7 @@
   <!-- PAINEL COM UM CAMPEONATO -->
   {% for league, matches in object_list.items %}
     {% if matches %}
-    <div class="panel panel-default">
+    <div class="panel panel-default bet-card">
 
       <div class="panel-heading bg-custom js-jCampeonato"><i class="fa fa-trophy" aria-hidden="true"></i> <strong>{{ league }}</strong></div>
 
@@ -34,12 +34,19 @@
         {% for match in matches %}
           <tr class="js-infoApostaJogo" aria-label="Informação da Aposta do Jogo">
             <td id="bet-pk" class="hidden">{{ match.pk }}</td>
-            <td data-field="date" class="text-center js-jData">{{ match.date|date:'d/m/Y à\s H:i' }}</td>
+            <td data-field="date" class="text-center js-jData">
+              {{ match.date|date:'d/m/Y à\s H:i' }}
+              {% if match.date <= now %}
+              <span class="live-badge">Ao Vivo</span>
+              {% else %}
+              <span class="countdown-badge" data-match-id="{{ match.pk }}" data-match-timestamp="{{ match.date|date:'c' }}">Em breve</span>
+              {% endif %}
+            </td>
             <td data-field="home_team" class="text-center js-jTimeCasa">{{ match.home_team }}</td>
             <td data-field="visiting_team" class="text-center js-jTimeFora">{{ match.visiting_team }}</td>
-            <td data-field="home_win" class="text-center js-jVitoriaCasa"><button type="button" class="btn btn-default btn-xs js-btnAposta" name="Casa">{{ match.home_win|floatformat:2 }}</button></td>
-            <td data-field="draw" class="text-center js-jEmpate"><button type="button" class="btn btn-default btn-xs js-btnAposta" name="Empate">{{ match.draw|floatformat:2 }}</button></td>
-            <td data-field="visiting_win" class="text-center js-jVitoriaFora"><button type="button" class="btn btn-default btn-xs js-btnAposta" name="Fora">{{ match.visiting_win|floatformat:2 }}</button></td>
+            <td data-field="home_win" class="text-center js-jVitoriaCasa"><button type="button" class="btn btn-default btn-xs js-btnAposta odds-btn" name="Casa">{{ match.home_win|floatformat:2 }}</button></td>
+            <td data-field="draw" class="text-center js-jEmpate"><button type="button" class="btn btn-default btn-xs js-btnAposta odds-btn" name="Empate">{{ match.draw|floatformat:2 }}</button></td>
+            <td data-field="visiting_win" class="text-center js-jVitoriaFora"><button type="button" class="btn btn-default btn-xs js-btnAposta odds-btn" name="Fora">{{ match.visiting_win|floatformat:2 }}</button></td>
             <td class="text-center js-jExtras"><button type="button" class="btn btn-default btn-xs" name="Extras"><i class="fa fa-plus" aria-hidden="true"></i></button></td>
           </tr>
         {% endfor %}
@@ -74,10 +81,13 @@
       <!-- REMOVER TODOS AS APOSTAS -->
       <div class="btn-group btn-group-justified" >
         <div class="btn-group">
-          <p><button type="button" id="salve-bets" class="btn btn-success"><strong>Salvar as apostas</strong></button></p>
+          <p><button type="button" id="salve-bets" class="btn btn-success btn-bet-primary"><strong>Salvar as apostas</strong></button></p>
           <button type="button" class="btn btn-danger js-buttonRemoveAllBets"><strong><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Remover todas as apostas</strong></button>
         </div>
       </div>
+      {% if user_balance is not None %}
+      <p class="text-custom"><strong>Saldo disponível:</strong> R$ <span class="js-userBalance">{{ user_balance|floatformat:2 }}</span></p>
+      {% endif %}
       <div role="separator" class="form-group"></div>
 
       <!-- PAINEL COM GRUPO DE APOSTAS -->
@@ -184,6 +194,8 @@
         data[pk] = type;
       });
       var betsvalue = $(".js-inptValorAposta").val();
+      var $saveButton = $("#salve-bets");
+      $saveButton.addClass('is-loading').prop('disabled', true).text('Processando...');
       $.ajax({
         url: '{% url 'apostas:realizar-aposta' %}',
         data: {
@@ -191,10 +203,17 @@
             'betsvalue': betsvalue,
         },
         success: function (data) {
-          console.log(data.messages);
+          if (data.success) {
+            showMessage(data.message, 'success');
+          } else {
+            showMessage(data.message, 'danger');
+          }
         },
         error: function(data){
-            console.log(data);
+            showMessage('Não foi possível confirmar sua aposta.', 'danger');
+        },
+        complete: function(){
+            $saveButton.removeClass('is-loading').prop('disabled', false).text('Salvar as apostas');
         },
       });
   });
@@ -250,6 +269,50 @@ function calculatePossibleBetReturn(){
       calculatePossibleBetReturn();
    });
 
+})();
+
+(function updateCountdownBadges(){
+   function formatCountdown(seconds){
+      if (seconds <= 0){
+         return 'Ao Vivo';
+      }
+      var minutes = Math.floor(seconds / 60);
+      var remainingSeconds = seconds % 60;
+      return minutes + 'm ' + remainingSeconds + 's';
+   }
+
+   function updateLocally(){
+      $('.countdown-badge').each(function(){
+         var $badge = $(this);
+         var start = new Date($badge.data('match-timestamp'));
+         var now = new Date();
+         var diff = Math.floor((start.getTime() - now.getTime()) / 1000);
+         $badge.text(formatCountdown(diff));
+         if (diff <= 0){
+            $badge.removeClass('countdown-badge').addClass('live-badge').text('Ao Vivo');
+         }
+      });
+   }
+
+   function refreshOdds(){
+      $.get('{% url "partidas:odds-feed" %}', function(payload){
+         $('.js-infoApostaJogo').each(function(){
+            var $row = $(this);
+            var matchId = $row.find('#bet-pk').text();
+            var matchData = payload[matchId];
+            if (!matchData){
+               return;
+            }
+            $row.find('.js-jVitoriaCasa .js-btnAposta').text(parseFloat(matchData.home_win).toFixed(2));
+            $row.find('.js-jEmpate .js-btnAposta').text(parseFloat(matchData.draw).toFixed(2));
+            $row.find('.js-jVitoriaFora .js-btnAposta').text(parseFloat(matchData.visiting_win).toFixed(2));
+         });
+      });
+   }
+
+   updateLocally();
+   setInterval(updateLocally, 1000);
+   setInterval(refreshOdds, 15000);
 })();
 
 

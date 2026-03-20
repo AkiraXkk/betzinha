@@ -1,29 +1,30 @@
 .modal-header--login{
-   border: 2px solid #5F798C;
+   border: 1px solid #243254;
+   background-color: #111a30;
 }
 
 .btn-entrar{
-   background-color: #5F798C !important;
+   background-color: #19c37d !important;
    color:#fff !important;
 }
 
 .modal-header--login > button {
-   color: #5F798C !important;
+   color: #8ea7d3 !important;
    opacity: 1 !important;
 }
 
 .modal-header--login > h4{
-   color: #5F798C;
+   color: #ffd34d;
    text-align: center;
    font-weight: bold;
 }
 
 .modal-body--login .form-group{
    margin-bottom: 10px !important;
-   color: #5F798C !important;
+   color: #b8c9e6 !important;
 }
 
 .modal-body--login{
-   border: 4px solid #5F798C;
-   background-color: rgba(95, 121, 140, 0.17);
+   border: 1px solid #243254;
+   background-color: #0f172a;
 }

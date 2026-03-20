@@ -35,10 +35,70 @@
 }
 
 .text-custom{
-   color: #3C4D59 !important;
+   color: #c4d4ee !important;
 }
 
 .bg-custom{
-   background-color: #3C4D59 !important;
+   background-color: #111a30 !important;
    color: #fff !important;
+}
+
+.panel{
+   border-color: #243254 !important;
+   background-color: #0f172a !important;
+}
+
+.table>thead>tr>th,
+.table>tbody>tr>td{
+   border-color: #243254 !important;
+   background-color: #0f172a;
+   color: #dce6f8;
+}
+
+.odds-btn{
+   background-color: #1a243d !important;
+   color: #ffd34d !important;
+   border-color: #30446f !important;
+   font-weight: bold;
+}
+
+.odds-btn:hover{
+   background-color: #243254 !important;
+}
+
+.live-badge{
+   background-color: #19c37d;
+   color: #07130e;
+   padding: 2px 8px;
+   border-radius: 10px;
+   font-size: 11px;
+   font-weight: bold;
+   margin-left: 6px;
+}
+
+.countdown-badge{
+   background-color: #223257;
+   color: #ffd34d;
+   padding: 2px 8px;
+   border-radius: 10px;
+   font-size: 11px;
+   margin-left: 6px;
+}
+
+.btn-bet-primary{
+   background-color: #19c37d !important;
+   border-color: #15a869 !important;
+   color: #08140f !important;
+   font-weight: bold;
+}
+
+.bet-card{
+   border: 1px solid #243254;
+   border-radius: 6px;
+   overflow: hidden;
+}
+
+.is-loading{
+   opacity: .65;
+   pointer-events: none;
 }
