@@ -14,7 +14,9 @@ import os
 
 import dj_database_url
 
-from decouple import config
+from decouple import config, Csv
+from django.core.exceptions import ImproperlyConfigured
+from django.core.management.utils import get_random_secret_key
 
 from . import dirs
 
@@ -26,12 +28,26 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY', default='')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['betsmania.herokuapp.com']
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = get_random_secret_key()
+    else:
+        raise ImproperlyConfigured('SECRET_KEY must be set when DEBUG is False')
+
+ALLOWED_HOSTS = config(
+    'ALLOWED_HOSTS',
+    default='127.0.0.1,localhost,betsmania.herokuapp.com',
+    cast=Csv()
+)
+
+vercel_url = os.environ.get('VERCEL_URL')
+if vercel_url:
+    ALLOWED_HOSTS.append(vercel_url)
 
 INTERNAL_IPS = ['127.0.0.1']
 
@@ -93,7 +109,8 @@ DATABASES = {
 }
 
 
-DATABASES['default'] = dj_database_url.config()
+DEFAULT_DATABASE_CONFIG = DATABASES['default']
+DATABASES['default'] = dj_database_url.config(default=DEFAULT_DATABASE_CONFIG)
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
@@ -146,7 +163,7 @@ DOCS_ROOT = os.path.join(dirs.PROJECT_DIR, 'docs')
 MEDIA_ROOT = os.path.join(dirs.PROJECT_DIR, 'media')
 
 # Deploy Configuration
-if os.environ.get('DEPLOY', False):
+if os.environ.get('DEPLOY', False) or os.environ.get('VERCEL_DEPLOY', False):
     STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 # Test Configuration
