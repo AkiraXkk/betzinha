@@ -33,9 +33,13 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
-    default='betsmania.herokuapp.com,.vercel.app,localhost,127.0.0.1',
+    default='betsmania.herokuapp.com,localhost,127.0.0.1',
     cast=lambda value: [host.strip() for host in value.split(',') if host.strip()]
 )
+VERCEL_URL = os.environ.get('VERCEL_URL')
+if VERCEL_URL:
+    if VERCEL_URL not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(VERCEL_URL)
 
 INTERNAL_IPS = ['127.0.0.1']
 
@@ -48,15 +52,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'aloe_django',
     'contas',
     'partidas',
     'times',
     'apostas',
 ]
 
+try:
+    import aloe_django  # noqa: F401
+    INSTALLED_APPS.append('aloe_django')
+except ImportError:
+    pass
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -153,7 +163,11 @@ MEDIA_ROOT = os.path.join(dirs.PROJECT_DIR, 'media')
 
 # Deploy Configuration
 if os.environ.get('DEPLOY', False):
-    STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+    STORAGES = {
+        'staticfiles': {
+            'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+        }
+    }
 
 # Test Configuration
 

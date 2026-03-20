@@ -6,7 +6,7 @@ from django.db import transaction
 from django.http import HttpResponse
 from django.views import generic
 from django.utils.functional import cached_property
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from . import models
 from contas.models import Wallet
@@ -40,7 +40,7 @@ class BetCreateView(generic.View):
 
     def json_response(self, success, message):
         return HttpResponse(
-            json.dumps({'success': success, 'message': message}),
+            json.dumps({'success': success, 'message': str(message)}),
             content_type='application/json'
         )
 

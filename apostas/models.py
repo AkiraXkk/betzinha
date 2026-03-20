@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from partidas.models import Match
 
@@ -16,9 +16,9 @@ class BetManager(models.Manager):
 
 
 class Bet(models.Model):
-    user = models.ForeignKey(User, blank=True, null=True)
+    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     code = models.CharField(_('Code'), max_length=126)
-    match = models.ForeignKey(Match, verbose_name=_('Match'))
+    match = models.ForeignKey(Match, verbose_name=_('Match'), on_delete=models.CASCADE)
     value = models.DecimalField(_('Value'), decimal_places=2, max_digits=4)
     type = models.CharField(_('Type'), max_length=100)
 

@@ -1,9 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth import views as auth_user
+from django.contrib.auth import login as auth_login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
+from django.contrib.auth import logout as auth_logout
+from django.shortcuts import redirect
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views import generic
 
 
@@ -12,7 +15,7 @@ class LoginView(generic.FormView):
     template_name = 'accounts/login.html'
 
     def form_valid(self, form):
-        auth_user.login(self.request, form.get_user())
+        auth_login(self.request, form.get_user())
         return super(LoginView, self).form_valid(form)
 
     def get_success_url(self):
@@ -31,4 +34,5 @@ class CreateUserView(generic.CreateView):
 
 
 def logout(request):
-    return auth_user.logout(request, next_page='partidas:home')
+    auth_logout(request)
+    return redirect('partidas:home')

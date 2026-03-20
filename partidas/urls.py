@@ -1,7 +1,7 @@
-from django.conf.urls import url
+from django.urls import re_path
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.MatchListView.as_view(), name='home'),
-    url(r'^odds/feed/$', views.MatchOddsFeedView.as_view(), name='odds-feed'),
+    re_path(r'^$', views.MatchListView.as_view(), name='home'),
+    re_path(r'^odds/feed/$', views.MatchOddsFeedView.as_view(), name='odds-feed'),
 ]
