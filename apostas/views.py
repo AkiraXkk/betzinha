@@ -13,6 +13,7 @@ from contas.models import Wallet
 from partidas.models import Match
 
 VALID_BET_TYPES = ('home_win', 'draw', 'visiting_win')
+MAX_STORED_BET_VALUE = Decimal('99.99')
 
 
 class BetCreateView(generic.View):
@@ -76,9 +77,8 @@ class BetCreateView(generic.View):
         return self.json_response(True, _('Bet successfully placed.'))
 
     def can_store_bet_value(self, match, bet_type):
-        max_bet_value = Decimal('99.99')
         calculated_value = self.value * Decimal(str(getattr(match, bet_type)))
-        return calculated_value <= max_bet_value
+        return calculated_value <= MAX_STORED_BET_VALUE
 
     def create_bet(self, match, type):
         '''
