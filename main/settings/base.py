@@ -31,7 +31,11 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['betsmania.herokuapp.com']
+ALLOWED_HOSTS = config(
+    'ALLOWED_HOSTS',
+    default='betsmania.herokuapp.com,.vercel.app,localhost,127.0.0.1',
+    cast=lambda value: [host.strip() for host in value.split(',') if host.strip()]
+)
 
 INTERNAL_IPS = ['127.0.0.1']
 
@@ -93,7 +97,9 @@ DATABASES = {
 }
 
 
-DATABASES['default'] = dj_database_url.config()
+DATABASES['default'] = dj_database_url.config(
+    default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
+)
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
